@@ -1,15 +1,34 @@
 import { combineReducers } from 'redux'
 
 
-const some_state = (state='', action) => {
+const stock_name = (state='AAPL', action) => {
 	switch (action.type) {
-    case 'STATE_CHANGED':
+    case 'STOCK_CHANGED':
      	return action.val
     default:
       return state
   }
 }
 
+const display_elements = (state=['close'], action) => {
+	var new_state = state.slice()
+	switch (action.type) {
+    case 'DISPLAY_CHANGED':
+     	var val = action.val
+     	var idx = new_state.indexOf(val)
+     	//Toggle display elements
+     	if (idx === -1){
+     		new_state.push(val)
+     	}else{
+     		new_state.splice(idx, 1)
+     	}
+     	return new_state
+    default:
+      return state
+  }
+}
+
 export default combineReducers({
-some_state
+stock_name,
+display_elements
 })

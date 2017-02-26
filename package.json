@@ -20,8 +20,7 @@
     "react-router": "^2.7.0",
     "redux": "^3.5.2",
     "redux-logger": "^2.6.1",
-    "redux-thunk": "^2.1.0",
-    "svg-to-jsx": "0.0.20"
+    "redux-thunk": "^2.1.0"
   },
   "devDependencies": {
     "webpack": "^1.13.2",
