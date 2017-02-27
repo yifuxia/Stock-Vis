@@ -1,4 +1,5 @@
 import React from 'react';
+import {color_map} from '../utils/color_map'
 
 //Initialize
 var svg = d3.select("body").append("svg").attr("id","graph")
@@ -11,7 +12,7 @@ var x = d3.scaleTime()
     .rangeRound([0, 900]);
 var y = d3.scaleLinear()
     .rangeRound([300, 0]);
-var z = d3.scaleOrdinal(d3.schemeCategory10);
+
 var line = d3.line()
           .x(function(d) { return x(d.Date); })
           .y(function(d) { return y(d.value); });
@@ -48,8 +49,7 @@ export default class Canvas extends React.Component {
       y.domain([
         d3.min(elements, function(c) { return d3.min(c.values, function(d) { return d.value; }); }),
         d3.max(elements, function(c) { return d3.max(c.values, function(d) { return d.value; }); })
-      ]);
-      z.domain(elements.map(function(c) { return c.el; }));    
+      ]); 
       
       g.append("g")
         .attr("class", "x axis")
@@ -59,8 +59,8 @@ export default class Canvas extends React.Component {
 
       var svg = d3.select("body").select("#graph").transition();
       var lines = g.selectAll('.line').data(elements)
-
-      lines.exit().transition().duration(300).remove()
+      
+      lines.exit().transition().duration(500).remove()
       
       lines.enter().append('path')
           .attr("fill", "none")
@@ -68,7 +68,13 @@ export default class Canvas extends React.Component {
 
       lines.transition().duration(750)
       .attr("d", function(d) { return line(d.values);})
-      .attr('stroke',function(d) { return z(d.el);})
+      .attr('stroke',function(d) { return color_map[d.el];})
+      .style('opacity',function(d) {
+        if (display.indexOf(d.el) === -1){
+          return 0;
+        }
+        return 1
+      })
 
         svg.select(".x.axis") // change the x axis
             .duration(750)

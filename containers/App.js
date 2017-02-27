@@ -5,6 +5,7 @@ import PickerContainer from './PickerContainer'
 import CanvasContainer from './CanvasContainer'
 import React from 'react';
 
+
 class App extends React.Component {
 	render(){
 		return (
