@@ -5,7 +5,7 @@ import ElementPicker from '../components/ElementPicker'
 import {change_stock} from '../actions/'
 import {change_element_display} from '../actions'
 
-var elements=['close','open','high','low']
+var elements=['Close','Open','High','Low']
 
 class PickerContainer extends React.Component {
   constructor(props) {

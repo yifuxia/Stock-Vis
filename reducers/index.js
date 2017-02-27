@@ -10,7 +10,7 @@ const stock_name = (state='AAPL', action) => {
   }
 }
 
-const display_elements = (state=['close'], action) => {
+const display_elements = (state=['Close'], action) => {
 	var new_state = state.slice()
 	switch (action.type) {
     case 'DISPLAY_CHANGED':
