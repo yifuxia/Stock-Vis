@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import Canvas from '../components/Canvas'
+import MainCanvas from '../components/MainCanvas'
+
 
 
 class CanvasContainer extends React.Component {
@@ -11,7 +12,7 @@ class CanvasContainer extends React.Component {
   	const {display_elements, stock_name} = this.props
     return (
             <div>
-            	<Canvas display={display_elements} name={stock_name}/>
+            	<MainCanvas display={display_elements} name={stock_name}/>
             </div> 
     );
   }
