@@ -3,10 +3,10 @@ import {color_map} from '../utils/color_map'
 
 //Initialize
 var svg = d3.select("body").append("svg").attr("id","graph")
-    .attr("viewBox", '0 0 1000 800')
+    .attr("viewBox", '0 0 1100 600')
     .attr('preserveAspectRatio',"xMidYMid meet")
-    .attr('width','80vw');
-var g = svg.append("g").attr("transform", "translate(" + 100 + "," + 100 + ")");
+    .attr('width','100vw');
+var g = svg.append("g").attr("transform", "translate(" + 100 + "," + 50 + ")");
 var parseTime = d3.timeParse("%Y-%m-%d");
 var x = d3.scaleTime()
     .rangeRound([0, 900]);
@@ -23,7 +23,7 @@ var y_bar = d3.scaleLinear()
 
 var brushg = svg.append("g")
         .attr("class", "brush")
-        .attr("transform", "translate(" + 100 + "," + 420 + ")")
+        .attr("transform", "translate(" + 100 + "," + 370 + ")")
 var line = d3.line()
           .curve(d3.curveMonotoneX)
           .x(function(d) { return x(d.Date); })
@@ -43,17 +43,34 @@ g.append("defs").append("clipPath")
 function brushed() {
         var range = d3.brushSelection(this)
             .map(x2.invert);
-        console.log(range);
+        
         x.domain(range);
         x_bar.domain(range)
         g.select(".axis.x").call(d3.axisBottom(x));
         g.selectAll(".line").attr("d", function(d) { return line(d.values);});
         g.selectAll('.bar')
-          .attr("x", function(d) { return x_bar(d.Date); })
-          .attr("width", 1)
-          .attr("y", function(d) { return y_bar(d.Volume); })
-          .attr("height", function(d) { return 300 - y_bar(d.Volume); })
+          .attr("x1", function(d) { return x_bar(d.Date); })
+          .attr("x2", function(d) { return x_bar(d.Date); })
+          .attr("y2", function(d) { return y_bar(d.Volume); })
+          .attr("y1", function(d) { return 300 })
+          
       }
+function abbreviateNumber(value) {
+    var newValue = value;
+    if (value >= 1000) {
+        var suffixes = ["", "K", "M", "B","T"];
+        var suffixNum = Math.floor( (""+value).length/3 );
+        var shortValue = '';
+        for (var precision = 2; precision >= 1; precision--) {
+            shortValue = parseFloat( (suffixNum != 0 ? (value / Math.pow(1000,suffixNum) ) : value).toPrecision(precision));
+            var dotLessShortValue = (shortValue + '').replace(/[^a-zA-Z 0-9]+/g,'');
+            if (dotLessShortValue.length <= 2) { break; }
+        }
+        if (shortValue % 1 != 0)  shortNum = shortValue.toFixed(1);
+        newValue = shortValue+suffixes[suffixNum];
+    }
+    return newValue;
+}
 export default class MainCanvas extends React.Component {
   constructor(props) {
     super(props);
@@ -63,6 +80,34 @@ export default class MainCanvas extends React.Component {
     const {display, name} = this.props;
     d3.csv('public/data/'+name + ".csv", function(error, data) {
       if (error) throw error;
+      data.reverse()
+      function mousemove() {
+        var x0 = x.invert(d3.mouse(this)[0]);
+        var bisect_date = d3.bisector(function(d){return d.Date}).right;
+
+        var i = bisect_date(data, x0)
+        var d = data[i];
+        focus.attr("transform", "translate(" + x(d.Date) + "," + y(d.Close) + ")");
+        focus.select("text").text(d.Date.getFullYear()+'-'+(d.Date.getMonth()+1)+'-'+d.Date.getDate());
+        focus.select(".vertical_line")
+        .attr('x1', 0)
+        .attr('y1', -y(d.Close))
+        .attr('x2',0)
+        .attr('y2',300-y(d.Close))
+        /*
+        focus.select(".horizontal_line")
+        .attr('x1', 0)
+        .attr('y1', 0)
+        .attr('x2',-x(d.Date))
+        .attr('y2',0)
+        */
+        document.getElementById('Close').innerHTML = 'Close '+d.Close.toFixed(2)
+        document.getElementById('Open').innerHTML = 'Open '+d.Open.toFixed(2)
+        document.getElementById('High').innerHTML = 'High '+d.High.toFixed(2)
+        document.getElementById('Low').innerHTML = 'Low '+d.Low.toFixed(2)
+        document.getElementById('Vol').innerHTML = 'Vol '+abbreviateNumber(d.Volume)
+      }
+
       // format the data
       data.forEach(function(d) {
           d.Date = parseTime(d.Date);
@@ -107,6 +152,7 @@ export default class MainCanvas extends React.Component {
           .attr("transform", "translate(0,300)")
        g.append("g")
          .attr("class", "y axis")
+
 
     
       brushg.call(brush)
@@ -172,7 +218,7 @@ Axises
           .call(d3.axisBottom(x2))
         svg.select(".y.axis") // change the y axis
             .duration(750)
-            .call(d3.axisLeft(y));
+            .call(d3.axisRight(y).ticks(5).tickSize(900));
 
 /*
 
@@ -184,23 +230,66 @@ Volume bar
       bars.exit().transition().duration(500).remove()
 
       bars.enter()
-      .append("rect")
+      .append("line")
       .attr("class", "bar")
 
       bars.transition().duration(750)
-      .attr("x", function(d) { return x_bar(d.Date); })
-      .attr("width", 1)
-      .attr("y", function(d) { return y_bar(d.Volume); })
-      .attr("height", function(d) { return 300 - y_bar(d.Volume); })
-      .attr('fill',function(d,i){
-        if (i<data.length-1 && d.Volume>bars.data()[i+1].Volume){
+      .attr("x1", function(d) { return x_bar(d.Date); })
+      .attr("x2", function(d) { return x_bar(d.Date); })
+      .attr("stroke-width", 900/data.length)
+      .attr("stroke-alignment","center")
+      .attr("y2", function(d) { return y_bar(d.Volume); })
+      .attr("y1", function(d) { return 300 })
+      .attr('stroke',function(d,i){
+        if (i>0 && d.Close>bars.data()[i-1].Close){
           return 'lightgreen'
-        }else if (i<data.length-1 && d.Volume<bars.data()[i+1].Volume){
+        }else if (i>0 && d.Close<bars.data()[i-1].Close){
           return 'pink'
         }else{
           return 'grey'
         }
       })
+
+/*
+
+  Tooltip
+
+*/
+      var focus = g.append("g")
+            .attr("class", "focus")
+            .style("display", "none");
+
+        focus.append("circle")
+            .attr("r", 3)
+            .attr("stroke-width", 1)
+            .style('stroke','black');
+
+        focus.append("line")
+        .attr('class','vertical_line')
+        .attr('stroke-dasharray','5,5')
+        .attr('stroke-width',1)
+        .style('stroke','black')
+
+        focus.append("line")
+        .attr('class','horizontal_line')
+        .attr('stroke-dasharray','5,5')
+        .attr('stroke-width',1)
+        .style('stroke','black')
+
+        focus.append("text")
+            .attr("x", 10)
+            .attr('fill','black')
+            .attr("dy", ".35em")
+            .attr('font-size','20');
+
+        g.append("rect")
+            .attr("class", "overlay")
+            .attr("width", 1000)
+            .attr("height", 500)
+            //.style('fill','rgba(255,255,255,0)')
+            .on("mouseover", function() { focus.style("display", null); })
+            .on("mouseout", function() { focus.style("display", "none"); })
+            .on("mousemove", mousemove);
 
     })
     return (

@@ -1,5 +1,5 @@
 export const color_map = {
-	'Close':'red',
+	'Close': 'red',
 	'Open' : 'blue',
 	'High' : 'orange',
 	'Low': 'green'

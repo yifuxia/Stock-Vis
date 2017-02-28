@@ -7,11 +7,11 @@ export default class ElementPicker extends React.Component {
   }
   render() {
   	const { name, selected, onClick } = this.props
-  	var style = selected.indexOf(name) === -1 ? {'color':'black'}:{color:color_map[name]}
+  	var style = selected.indexOf(name) === -1 ? {'color':'black'}:{color:color_map[name],'border':'solid'}
     return (
             <div>
-            	<div onClick={onClick}>
-            		<p style={style}>{name}</p>
+            	<div onClick={onClick} style={{'cursor':"pointer"}}>
+            		<p id={name} style={style}>{name}</p>
             	</div>
             </div> 
     );

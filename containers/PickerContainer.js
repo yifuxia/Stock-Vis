@@ -14,16 +14,21 @@ class PickerContainer extends React.Component {
   render() {
   	const {display_elements} = this.props
     return (
-            <div>
-            	<StockPicker onChange = {() => {this.props.change_stock(document.getElementById("stock_selector").value)}}/>
-            	{
-            		elements.map(el => <ElementPicker
-            			key = {el}
-            			name = {el}
-            			selected = {display_elements}
-            			onClick = {() => {this.props.change_element_display(el)}}
-            			/>)
-            	}
+            <div style={{'textAlign':'center'}}>
+            	<div style={{'marginTop':'5vh'}}>
+              <StockPicker onChange = {() => {this.props.change_stock(document.getElementById("stock_selector").value)}}/>
+            	</div>
+              <div  id="value_display" style={{position:'absolute'}}>
+                {
+              		elements.map(el => <ElementPicker
+              			key = {el}
+              			name = {el}
+              			selected = {display_elements}
+              			onClick = {() => {this.props.change_element_display(el)}}
+              			/>)
+              	}
+                <p id="Vol">Vol</p>
+              </div>
             </div> 
     );
   }
