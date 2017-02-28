@@ -14,6 +14,7 @@ const store = createStore(
   reducer,
   applyMiddleware(...middleware)
 )
+window.store = store
 
 //Initial action
 setTimeout(function(){store.dispatch(change_element_display('Close'))},100)

@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import MainCanvas from '../components/MainCanvas'
+import Brush from '../components/Brush'
 
 
 
@@ -9,10 +10,11 @@ class CanvasContainer extends React.Component {
     super(props);
   }
   render() {
-  	const {display_elements, stock_name} = this.props
+  	const {display_elements, stock_name, time_range} = this.props
     return (
             <div>
-            	<MainCanvas display={display_elements} name={stock_name}/>
+              <Brush />
+            	<MainCanvas display={display_elements} name={stock_name} time_range={time_range}/>
             </div> 
     );
   }
@@ -20,7 +22,8 @@ class CanvasContainer extends React.Component {
 function mapStateToProps(state) {
   return {
     stock_name: state.stock_name,
-    display_elements: state.display_elements
+    display_elements: state.display_elements,
+    time_range: state.time_range
   }
 }
 

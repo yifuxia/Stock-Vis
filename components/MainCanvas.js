@@ -1,6 +1,5 @@
 import React from 'react';
 import {color_map} from '../utils/color_map'
-
 //Initialize
 var svg = d3.select("body").append("svg").attr("id","graph")
     .attr("viewBox", '0 0 1100 600')
@@ -21,9 +20,8 @@ var x_bar = d3.scaleTime()
 var y_bar = d3.scaleLinear()
     .rangeRound([300, 200]);
 
-var brushg = svg.append("g")
-        .attr("class", "brush")
-        .attr("transform", "translate(" + 100 + "," + 370 + ")")
+
+
 var line = d3.line()
           .curve(d3.curveMonotoneX)
           .x(function(d) { return x(d.Date); })
@@ -40,23 +38,7 @@ g.append("defs").append("clipPath")
     .attr("width", 900)
     .attr("height", 300);
  
-function brushed() {
-        var range = d3.brushSelection(this)
-            .map(x2.invert);
-        var diffDays = Math.round(Math.abs((range[1].getTime() - range[0].getTime())/(24*60*60*1000)));
-        console.log(diffDays);
-        x.domain(range);
-        x_bar.domain(range)
-        g.select(".axis.x").call(d3.axisBottom(x));
-        g.selectAll(".line").attr("d", function(d) { return line(d.values);});
-        g.selectAll('.bar')
-          .attr('stroke-width',900/diffDays)
-          .attr("x1", function(d) { return x_bar(d.Date); })
-          .attr("x2", function(d) { return x_bar(d.Date); })
-          .attr("y2", function(d) { return y_bar(d.Volume); })
-          .attr("y1", function(d) { return 300 })
-          
-      }
+
 function abbreviateNumber(value) {
     var newValue = value;
     if (value >= 1000) {
@@ -79,10 +61,16 @@ export default class MainCanvas extends React.Component {
   }
     
   render() {
-    const {display, name} = this.props;
+    const {display, name, time_range} = this.props;
     d3.csv('public/data/'+name + ".csv", function(error, data) {
       if (error) throw error;
+      var range = time_range;
+      console.log(range);
+      
+       
+
       data.reverse()
+      
       function mousemove() {
         var x0 = x.invert(d3.mouse(this)[0]);
         var bisect_date = d3.bisector(function(d){return d.Date}).right;
@@ -90,7 +78,10 @@ export default class MainCanvas extends React.Component {
         var i = bisect_date(data, x0)
         var d = data[i];
         focus.attr("transform", "translate(" + x(d.Date) + "," + y(d.Close) + ")");
-        focus.select("text").text(d.Date.getFullYear()+'-'+(d.Date.getMonth()+1)+'-'+d.Date.getDate());
+        focus.select("text")
+        .text(d.Date.getFullYear()+'-'+(d.Date.getMonth()+1)+'-'+d.Date.getDate())
+        .attr("x",0)
+        .attr("y",-y(d.Close)-5)
         focus.select(".vertical_line")
         .attr('x1', 0)
         .attr('y1', -y(d.Close))
@@ -120,9 +111,7 @@ export default class MainCanvas extends React.Component {
           d.Volume = +d.Volume;
       });
 
-      var brush = d3.brushX()
-        .extent([[0,0], [900,80]])
-        .on("brush", brushed);
+      var diffDays = Math.round(Math.abs((range[1].getTime() - range[0].getTime())/(24*60*60*1000)));
 
       //Clipping data
       var elements = data.columns.slice(1,5,6).map(function(el) {
@@ -135,16 +124,20 @@ export default class MainCanvas extends React.Component {
             });
 
       // Scale the range of the data
-      x.domain(d3.extent(data, function(d) { return d.Date; }));  
+      //x.domain(d3.extent(data, function(d) { return d.Date; }));  
       y.domain([
         d3.min(elements, function(c) { return d3.min(c.values, function(d) { return d.value; }); }),
         d3.max(elements, function(c) { return d3.max(c.values, function(d) { return d.value; }); })
       ]); 
-      x2.domain(x.domain()); 
-      y2.domain(y.domain());
-      x_bar.domain(d3.extent(data, function(d) { return d.Date; }));
+      x2.domain(d3.extent(data, function(d) { return d.Date; })); 
+      y2.domain([
+        d3.min(elements, function(c) { return d3.min(c.values, function(d) { return d.value; }); }),
+        d3.max(elements, function(c) { return d3.max(c.values, function(d) { return d.value; }); })
+        ]);
+      //x_bar.domain(d3.extent(data, function(d) { return d.Date; }));
       y_bar.domain([0, d3.max(data, function(d) { return d.Volume; })]);
-
+      x.domain(range);
+      x_bar.domain(range)
       //Establish axises
       g.append("g")
         .attr("class", "x2 axis")
@@ -157,8 +150,7 @@ export default class MainCanvas extends React.Component {
 
 
     
-      brushg.call(brush)
-        .call(brush.move, x.range())
+      
       
 /*
 
@@ -238,10 +230,10 @@ Volume bar
       bars.transition().duration(750)
       .attr("x1", function(d) { return x_bar(d.Date); })
       .attr("x2", function(d) { return x_bar(d.Date); })
-      .attr("stroke-width", 900/data.length)
       .attr("stroke-alignment","center")
       .attr("y2", function(d) { return y_bar(d.Volume); })
       .attr("y1", function(d) { return 300 })
+      .attr('stroke-width',850/diffDays)
       .style('opacity','0.5')
       .attr('stroke',function(d,i){
         if (i>0 && d.Close>bars.data()[i-1].Close){
@@ -263,9 +255,9 @@ Volume bar
             .style("display", "none");
 
         focus.append("circle")
-            .attr("r", 3)
+            .attr("r", 2)
             .attr("stroke-width", 1)
-            .style('stroke','black');
+            .style('stroke','red');
 
         focus.append("line")
         .attr('class','vertical_line')
@@ -280,10 +272,8 @@ Volume bar
         .style('stroke','black')
 
         focus.append("text")
-            .attr("x", 10)
             .attr('fill','black')
-            .attr("dy", ".35em")
-            .attr('font-size','20');
+            .attr('font-size','10');
 
         g.append("rect")
             .attr("class", "overlay")

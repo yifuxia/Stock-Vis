@@ -27,8 +27,18 @@ const display_elements = (state=[], action) => {
       return state
   }
 }
+const time_range = (state='', action) => {
+  switch (action.type) {
+    case 'TIME_CHANGED':
+      return action.val
+    default:
+      return state
+  }
+}
+
 
 export default combineReducers({
 stock_name,
-display_elements
+display_elements,
+time_range
 })

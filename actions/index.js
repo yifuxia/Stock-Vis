@@ -11,3 +11,10 @@ export const change_element_display = (el) => {
 		val: el
 	}
 }
+
+export const change_time_range = (range) => {
+	return {
+		type: 'TIME_CHANGED',
+		val: range
+	}
+}
