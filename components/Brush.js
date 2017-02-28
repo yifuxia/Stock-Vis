@@ -1,3 +1,9 @@
+/*
+The purpose of this component is 
+to seperate the brush as a range selector
+
+*/
+
 import React from 'react';
 import {change_time_range} from '../actions'
 
@@ -10,10 +16,10 @@ var brush = d3.brushX()
         .on("brush", brushed);
 var x2 = d3.scaleTime()
     .rangeRound([0, 900]);
+
 function brushed() {
     var range = d3.brushSelection(this)
         .map(x2.invert);
-    console.log(d3.brushSelection(this));
     window.store.dispatch(change_time_range(range))
 }
 var parseTime = d3.timeParse("%Y-%m-%d");
@@ -26,7 +32,6 @@ d3.csv("public/data/AAPL.csv", function(error, data) {
   });
 
   x2.domain(d3.extent(data, function(d) { return d.Date; }));
-  console.log(x2.domain());
   brushg.call(brush)
   .call(brush.move, x2.range())
 })
@@ -36,11 +41,8 @@ export default class Brush extends React.Component {
     super(props);
   }
   render() {
-
-  	
     return (
             <div>
-            
             </div> 
     );
   }

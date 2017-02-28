@@ -6,7 +6,15 @@ import {change_stock} from '../actions/'
 import {change_element_display} from '../actions'
 
 var elements=['Close','Open','High','Low']
-
+var value_display_style = {
+    position:'absolute',
+    left:((100/1100)*110) + 'vw',
+    top:'calc('+ ((100/1100)*50) + 'vw' + ' + 10vh',
+    fontSize:((100/1100)*10)+ 'vw',
+    backgroundColor:'rgba(255,255,255,0.8)',
+    border:'solid 1px'
+  }
+  
 class PickerContainer extends React.Component {
   constructor(props) {
     super(props);
@@ -18,7 +26,7 @@ class PickerContainer extends React.Component {
             	<div style={{'marginTop':'5vh'}}>
               <StockPicker onChange = {() => {this.props.change_stock(document.getElementById("stock_selector").value)}}/>
             	</div>
-              <div  id="value_display" style={{position:'absolute'}}>
+              <div  id="value_display" style={value_display_style}>
                 {
               		elements.map(el => <ElementPicker
               			key = {el}

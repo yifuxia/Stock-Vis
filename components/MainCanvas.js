@@ -1,27 +1,37 @@
 import React from 'react';
 import {color_map} from '../utils/color_map'
+
+//Sizes
+var width = 900,
+    main_graph_height = 300,
+    bar_chart_height = 100,
+    main_graph_margin = {top:50, left:100},
+    selector_graph_height = 80,
+    selector_graph_top = 320;
+
 //Initialize
 var svg = d3.select("body").append("svg").attr("id","graph")
     .attr("viewBox", '0 0 1100 600')
     .attr('preserveAspectRatio',"xMidYMid meet")
     .attr('width','100vw');
-var g = svg.append("g").attr("transform", "translate(" + 100 + "," + 50 + ")");
+var g = svg.append("g").attr("transform", "translate(" + main_graph_margin.left + "," + main_graph_margin.top + ")");
 var parseTime = d3.timeParse("%Y-%m-%d");
+  //Scales
 var x = d3.scaleTime()
-    .rangeRound([0, 900]);
+    .rangeRound([0, width]);
 var y = d3.scaleLinear()
-    .rangeRound([300, 0]);
+    .rangeRound([main_graph_height, 0]);
 var x2 = d3.scaleTime()
-    .rangeRound([0, 900]);
+    .rangeRound([0, width]);
 var y2 = d3.scaleLinear()
-    .rangeRound([400, 320]);
+    .rangeRound([selector_graph_top + selector_graph_height, selector_graph_top]);
 var x_bar = d3.scaleTime()
-    .rangeRound([0, 900]);
+    .rangeRound([0, width]);
 var y_bar = d3.scaleLinear()
-    .rangeRound([300, 200]);
+    .rangeRound([main_graph_height, (main_graph_height - bar_chart_height)]);
 
 
-
+  //Path generators
 var line = d3.line()
           .curve(d3.curveMonotoneX)
           .x(function(d) { return x(d.Date); })
@@ -35,10 +45,10 @@ var line2 = d3.line()
 g.append("defs").append("clipPath")
     .attr("id", "clip")
     .append("rect")
-    .attr("width", 900)
-    .attr("height", 300);
+    .attr("width", width)
+    .attr("height", main_graph_height);
  
-
+//Big number convertor
 function abbreviateNumber(value) {
     var newValue = value;
     if (value >= 1000) {
@@ -55,6 +65,7 @@ function abbreviateNumber(value) {
     }
     return newValue;
 }
+
 export default class MainCanvas extends React.Component {
   constructor(props) {
     super(props);
@@ -62,19 +73,15 @@ export default class MainCanvas extends React.Component {
     
   render() {
     const {display, name, time_range} = this.props;
+    
     d3.csv('public/data/'+name + ".csv", function(error, data) {
       if (error) throw error;
       var range = time_range;
-      console.log(range);
-      
-       
-
       data.reverse()
       
       function mousemove() {
         var x0 = x.invert(d3.mouse(this)[0]);
         var bisect_date = d3.bisector(function(d){return d.Date}).right;
-
         var i = bisect_date(data, x0)
         var d = data[i];
         focus.attr("transform", "translate(" + x(d.Date) + "," + y(d.Close) + ")");
@@ -86,14 +93,14 @@ export default class MainCanvas extends React.Component {
         .attr('x1', 0)
         .attr('y1', -y(d.Close))
         .attr('x2',0)
-        .attr('y2',300-y(d.Close))
-        /*
+        .attr('y2',main_graph_height-y(d.Close))
+        
         focus.select(".horizontal_line")
-        .attr('x1', 0)
+        .attr('x1', width-x(d.Date))
         .attr('y1', 0)
         .attr('x2',-x(d.Date))
         .attr('y2',0)
-        */
+        
         document.getElementById('Close').innerHTML = 'Close '+d.Close.toFixed(2)
         document.getElementById('Open').innerHTML = 'Open '+d.Open.toFixed(2)
         document.getElementById('High').innerHTML = 'High '+d.High.toFixed(2)
@@ -111,6 +118,7 @@ export default class MainCanvas extends React.Component {
           d.Volume = +d.Volume;
       });
 
+      //Get current range in days
       var diffDays = Math.round(Math.abs((range[1].getTime() - range[0].getTime())/(24*60*60*1000)));
 
       //Clipping data
@@ -123,8 +131,8 @@ export default class MainCanvas extends React.Component {
               };
             });
 
-      // Scale the range of the data
-      //x.domain(d3.extent(data, function(d) { return d.Date; }));  
+      // Scale the range of the data 
+      x.domain(range);
       y.domain([
         d3.min(elements, function(c) { return d3.min(c.values, function(d) { return d.value; }); }),
         d3.max(elements, function(c) { return d3.max(c.values, function(d) { return d.value; }); })
@@ -134,17 +142,16 @@ export default class MainCanvas extends React.Component {
         d3.min(elements, function(c) { return d3.min(c.values, function(d) { return d.value; }); }),
         d3.max(elements, function(c) { return d3.max(c.values, function(d) { return d.value; }); })
         ]);
-      //x_bar.domain(d3.extent(data, function(d) { return d.Date; }));
+      x_bar.domain(range);
       y_bar.domain([0, d3.max(data, function(d) { return d.Volume; })]);
-      x.domain(range);
-      x_bar.domain(range)
+      
       //Establish axises
       g.append("g")
         .attr("class", "x2 axis")
-          .attr("transform", "translate(0,400)")
+          .attr("transform", "translate(0," + (selector_graph_top+ selector_graph_height) + ")")
       g.append("g")
         .attr("class", "x axis")
-          .attr("transform", "translate(0,300)")
+          .attr("transform", "translate(0,"+ main_graph_height +")")
        g.append("g")
          .attr("class", "y axis")
 
@@ -212,7 +219,7 @@ Axises
           .call(d3.axisBottom(x2))
         svg.select(".y.axis") // change the y axis
             .duration(750)
-            .call(d3.axisRight(y).ticks(5).tickSize(900));
+            .call(d3.axisRight(y).ticks(5).tickSize(width));
 
 /*
 
@@ -233,7 +240,7 @@ Volume bar
       .attr("stroke-alignment","center")
       .attr("y2", function(d) { return y_bar(d.Volume); })
       .attr("y1", function(d) { return 300 })
-      .attr('stroke-width',850/diffDays)
+      .attr('stroke-width',(width-50)/diffDays)
       .style('opacity','0.5')
       .attr('stroke',function(d,i){
         if (i>0 && d.Close>bars.data()[i-1].Close){
@@ -277,8 +284,8 @@ Volume bar
 
         g.append("rect")
             .attr("class", "overlay")
-            .attr("width", 1000)
-            .attr("height", 500)
+            .attr("width", width)
+            .attr("height", main_graph_height)
             //.style('fill','rgba(255,255,255,0)')
             .on("mouseover", function() { focus.style("display", null); })
             .on("mouseout", function() { focus.style("display", "none"); })

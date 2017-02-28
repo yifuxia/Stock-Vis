@@ -19,7 +19,7 @@ export default class StockPicker extends React.Component {
             <div>
             	<select id="stock_selector" onChange={onChange}>
             		{options}
-				</select> 
+				      </select> 
             </div> 
     );
   }
