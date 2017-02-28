@@ -43,12 +43,14 @@ g.append("defs").append("clipPath")
 function brushed() {
         var range = d3.brushSelection(this)
             .map(x2.invert);
-        
+        var diffDays = Math.round(Math.abs((range[1].getTime() - range[0].getTime())/(24*60*60*1000)));
+        console.log(diffDays);
         x.domain(range);
         x_bar.domain(range)
         g.select(".axis.x").call(d3.axisBottom(x));
         g.selectAll(".line").attr("d", function(d) { return line(d.values);});
         g.selectAll('.bar')
+          .attr('stroke-width',900/diffDays)
           .attr("x1", function(d) { return x_bar(d.Date); })
           .attr("x2", function(d) { return x_bar(d.Date); })
           .attr("y2", function(d) { return y_bar(d.Volume); })
@@ -240,11 +242,12 @@ Volume bar
       .attr("stroke-alignment","center")
       .attr("y2", function(d) { return y_bar(d.Volume); })
       .attr("y1", function(d) { return 300 })
+      .style('opacity','0.5')
       .attr('stroke',function(d,i){
         if (i>0 && d.Close>bars.data()[i-1].Close){
-          return 'lightgreen'
+          return 'green'
         }else if (i>0 && d.Close<bars.data()[i-1].Close){
-          return 'pink'
+          return 'red'
         }else{
           return 'grey'
         }
