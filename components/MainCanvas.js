@@ -219,7 +219,7 @@ Axises
           .call(d3.axisBottom(x2))
         svg.select(".y.axis") // change the y axis
             .duration(750)
-            .call(d3.axisRight(y).ticks(5).tickSize(width));
+            .call(d3.axisRight(y).ticks(10).tickSize(width));
 
 /*
 
@@ -270,13 +270,13 @@ Volume bar
         .attr('class','vertical_line')
         .attr('stroke-dasharray','5,5')
         .attr('stroke-width',1)
-        .style('stroke','black')
+        .style('stroke','grey')
 
         focus.append("line")
         .attr('class','horizontal_line')
         .attr('stroke-dasharray','5,5')
         .attr('stroke-width',1)
-        .style('stroke','black')
+        .style('stroke','grey')
 
         focus.append("text")
             .attr('fill','black')
