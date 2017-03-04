@@ -18,29 +18,35 @@ class ComparePickerContainer extends React.Component {
     }
     color.domain(category)
     return (
-            <div>
+            <div style={{width:'90vw',marginLeft:((100/1100)*110) + 'vw'}}>
               <AddCompareStock />
-              {
-                comparing_stocks.map(el =>
-                  <div>
-                    <StockPicker key={"picker_"+el.id} id={"picker_"+el.id} 
-                              onChange = {
-                                () => {
-                                        this.props.change_cmp_stock({
-                                          name:document.getElementById("picker_"+el.id).value,
-                                          id: el.id
-                                        })
-                                      }
-                              }
-                              selected={el.name}
-                              color={color(el.id % 20)}
-                              />
-                      <p style={{display:'inline-block',pointer:'cursor'}}
-                          onClick = {() => this.props.delete_cmp_stock(el.id)}
-                          >✖</p>
-                    </div>
-                )
-              }
+              <div>
+                {
+                  comparing_stocks.map(el =>
+                    <div style={{textAlign:'center', display:'inline-block'}}>
+                      <div style={{textAlign:'center', display:'inline-block'}}>
+                      <StockPicker key={"picker_"+el.id} id={"picker_"+el.id} 
+                                onChange = {
+                                  () => {
+                                          this.props.change_cmp_stock({
+                                            name:document.getElementById("picker_"+el.id).value,
+                                            id: el.id
+                                          })
+                                        }
+                                }
+                                selected={el.name}
+                                color={color(el.id % 20)}
+                                />
+                       
+                        <p id={"cmp_"+el.id} style={{color:color(el.id % 20), marginTop:'0',marginBottom:'0'}}>20.23</p>
+                        </div>
+                         <p style={{display:'inline-block',cursor:'pointer',margin:'0 5px',color:color(el.id % 20)}}
+                            onClick = {() => this.props.delete_cmp_stock(el.id)}
+                            >✖</p>
+                      </div>
+                  )
+                }
+              </div>
             </div>
     );
   }

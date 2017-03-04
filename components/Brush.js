@@ -10,9 +10,9 @@ import {change_time_range} from '../actions'
 var svg = d3.select('#graph')
 var brushg = svg.append("g")
         .attr("class", "brush")
-        .attr("transform", "translate(" + 100 + "," + 370 + ")")
+        .attr("transform", "translate(" + 100 + "," + 260 + ")")
 var brush = d3.brushX()
-        .extent([[0,0], [900,80]])
+        .extent([[0,0], [900,40]])
         .on("brush", brushed);
 var x2 = d3.scaleTime()
     .rangeRound([0, 900]);

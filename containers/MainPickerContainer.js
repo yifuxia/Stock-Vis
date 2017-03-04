@@ -7,11 +7,8 @@ import {change_element_display} from '../actions'
 
 var elements=['Close','Open','High','Low']
 var value_display_style = {
-    position:'absolute',
-    left:((100/1100)*110) + 'vw',
-    fontSize:((100/1100)*10)+ 'vw',
+    marginLeft:((100/1100)*110) + 'vw',
     backgroundColor:'rgba(255,255,255,0.8)',
-    border:'solid 1px'
   }
 
 class MainPickerContainer extends React.Component {
@@ -19,23 +16,21 @@ class MainPickerContainer extends React.Component {
     super(props);
   }
   render() {
-  	const {display_elements} = this.props
+  	const {display_elements,comparing_stocks} = this.props
     return (
             <div id="value_display" style={value_display_style}>
-            	<div>
-                <StockPicker id="stock_selector" onChange = {() => {this.props.change_stock(document.getElementById("stock_selector").value)}}/>
-            	</div>
-              <div>
-                {
-              		elements.map(el => <ElementPicker
-              			key = {el}
-              			name = {el}
-              			selected = {display_elements}
-              			onClick = {() => {this.props.change_element_display(el)}}
-              			/>)
-              	}
-                <p id="Vol">Vol</p>
-              </div>
+              <StockPicker id="stock_selector" 
+                           color="red" 
+                           onChange = {() => {this.props.change_stock(document.getElementById("stock_selector").value)}}/>
+              {
+            		elements.map(el => <ElementPicker
+            			key = {el}
+            			name = {el}
+            			selected = {display_elements}
+            			onClick = {() => {this.props.change_element_display(el)}}
+            			/>)
+            	}
+              <p id="Vol" style={{display:'inline-block',border:'solid 1px'}}>Volume</p>
             </div> 
     );
   }
@@ -43,7 +38,8 @@ class MainPickerContainer extends React.Component {
 function mapStateToProps(state) {
   return {
     stock_name: state.stock_name,
-    display_elements: state.display_elements
+    display_elements: state.display_elements,
+    comparing_stocks: state.comparing_stocks
   }
 }
 

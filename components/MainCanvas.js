@@ -3,15 +3,15 @@ import {color_map} from '../utils/color_map'
 
 //Sizes
 var width = 900,
-    main_graph_height = 300,
-    bar_chart_height = 100,
-    main_graph_margin = {top:50, left:100},
-    selector_graph_height = 80,
-    selector_graph_top = 320;
+    main_graph_height = 200,
+    bar_chart_height = 50,
+    main_graph_margin = {top:20, left:100},
+    selector_graph_height = 40,
+    selector_graph_top = 240;
 
 //Initialize
 var svg = d3.select("body").append("svg").attr("id","graph")
-    .attr("viewBox", '0 -50 1100 600')
+    .attr("viewBox", '0 -50 1100 400')
     .attr('preserveAspectRatio',"xMidYMid meet")
     .attr('width','100vw');
 var g = svg.append("g").attr("transform", "translate(" + main_graph_margin.left + "," + main_graph_margin.top + ")");
@@ -125,7 +125,13 @@ export default class MainCanvas extends React.Component {
           var x0 = x.invert(d3.mouse(this)[0]);
           var bisect_date = d3.bisector(function(d){return d.Date}).right;
           var i = bisect_date(data, x0)
+          //get main stock data
           var d = data[i];
+          //get comparing stocks data
+          var e = cmp_data.map(function(el){ 
+            return  {id:el.id, data:el.data[i].Close}
+          })
+
           focus.attr("transform", "translate(" + x(d.Date) + "," + y(d.Close) + ")");
           focus.select("text")
           .text(d.Date.getFullYear()+'-'+(d.Date.getMonth()+1)+'-'+d.Date.getDate())
@@ -142,12 +148,18 @@ export default class MainCanvas extends React.Component {
           .attr('y1', 0)
           .attr('x2',-x(d.Date))
           .attr('y2',0)
-          
+
+          //display main stock data
           document.getElementById('Close').innerHTML = 'Close '+d.Close.toFixed(2)
           document.getElementById('Open').innerHTML = 'Open '+d.Open.toFixed(2)
           document.getElementById('High').innerHTML = 'High '+d.High.toFixed(2)
           document.getElementById('Low').innerHTML = 'Low '+d.Low.toFixed(2)
           document.getElementById('Vol').innerHTML = 'Vol '+abbreviateNumber(d.Volume)
+          //display comparing stock data
+          e.forEach(function(d){
+            document.getElementById("cmp_"+d.id).innerHTML = d.data.toFixed(2)
+          })
+
         }
 
         // format the data
@@ -251,7 +263,7 @@ export default class MainCanvas extends React.Component {
         lines.transition().duration(750)
         .attr("d", function(d) { return line(d.values);})
         .attr('stroke',function(d) { return color_map[d.el];})
-        .attr('stroke-width',3)
+        .attr('stroke-width',2)
         .style('opacity',function(d) {
           if (display.indexOf(d.el) === -1){
             return 0;

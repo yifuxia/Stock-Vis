@@ -18,7 +18,7 @@ export default class StockPicker extends React.Component {
   	const { id,onChange,selected,color } = this.props
     return (
             <div style={{display:'inline-block'}}>
-            	<select id={id} onChange={onChange} defaultValue={selected} style={{border:"3px solid "+color}}>
+            	<select id={id} onChange={onChange} defaultValue={selected} style={color==='red'?{border:"3px solid "+color}:{border:"3px dotted "+color}}>
             		{options}
 				      </select> 
             </div> 

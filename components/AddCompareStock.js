@@ -8,8 +8,8 @@ export default class AddCompareStock extends React.Component {
   render() {
     const {dispatch} = this.props
     return (
-            <div>
-            	<h1 onClick ={() => window.store.dispatch(add_cmp_stock())}>add</h1>
+            <div style={{display:'inline-block',cursor:'pointer'}}>
+            	<p style={{margin:'1vh 0'}} onClick ={() => window.store.dispatch(add_cmp_stock())}>Add compare stocks</p>
             </div> 
     );
   }
