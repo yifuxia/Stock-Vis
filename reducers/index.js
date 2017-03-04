@@ -35,10 +35,51 @@ const time_range = (state='', action) => {
       return state
   }
 }
+const comparing_stock = (state = {}, action) => {
+  switch (action.type) {
+    case 'ADD_CMP_STOCK':
+      return {
+        id: action.id,
+        name: action.name,
+      }
+    default:
+      return state
+  }
+}
+
+const comparing_stocks = (state = [], action) => {
+  var new_state = state.slice()
+  switch (action.type) {
+    case 'ADD_CMP_STOCK':
+      return [
+        ...state,
+        comparing_stock(undefined, action)
+      ]
+    case 'CHANGE_CMP_STOCK':
+      //find and change value of selected comparing stock name
+      for (var i in new_state){
+        var obj = new_state[i]
+        if (obj.id === action.id){
+          obj.name = action.val
+          break;
+        }
+      }
+      return new_state
+    case 'DELETE_CMP_STOCK':
+      var removed = state.filter(function(el){
+        return el.id !== action.id
+      })
+      return removed
+    default:
+      return state
+  }
+}
+
 
 
 export default combineReducers({
 stock_name,
 display_elements,
-time_range
+time_range,
+comparing_stocks
 })

@@ -24,6 +24,7 @@ function brushed() {
 }
 var parseTime = d3.timeParse("%Y-%m-%d");
 
+//Get initial range value
 d3.csv("public/data/AAPL.csv", function(error, data) {
   if (error) throw error;
   // format the data

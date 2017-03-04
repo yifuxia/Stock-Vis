@@ -9,24 +9,23 @@ var elements=['Close','Open','High','Low']
 var value_display_style = {
     position:'absolute',
     left:((100/1100)*110) + 'vw',
-    top:'calc('+ ((100/1100)*50) + 'vw' + ' + 10vh',
     fontSize:((100/1100)*10)+ 'vw',
     backgroundColor:'rgba(255,255,255,0.8)',
     border:'solid 1px'
   }
-  
-class PickerContainer extends React.Component {
+
+class MainPickerContainer extends React.Component {
   constructor(props) {
     super(props);
   }
   render() {
   	const {display_elements} = this.props
     return (
-            <div style={{'textAlign':'center'}}>
-            	<div style={{'marginTop':'5vh'}}>
-              <StockPicker onChange = {() => {this.props.change_stock(document.getElementById("stock_selector").value)}}/>
+            <div id="value_display" style={value_display_style}>
+            	<div>
+                <StockPicker id="stock_selector" onChange = {() => {this.props.change_stock(document.getElementById("stock_selector").value)}}/>
             	</div>
-              <div  id="value_display" style={value_display_style}>
+              <div>
                 {
               		elements.map(el => <ElementPicker
               			key = {el}
@@ -51,4 +50,4 @@ function mapStateToProps(state) {
 export default connect(
   mapStateToProps,
   {change_stock,change_element_display}
-)(PickerContainer)
+)(MainPickerContainer)

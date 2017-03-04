@@ -18,3 +18,27 @@ export const change_time_range = (range) => {
 		val: range
 	}
 }
+
+var nextCmpStock=0;
+export const add_cmp_stock = () => {
+	return {
+		type: 'ADD_CMP_STOCK',
+		id: nextCmpStock++,
+		name: 'AAPL'
+	}
+}
+
+export const change_cmp_stock = (obj) => {
+	return {
+		type: 'CHANGE_CMP_STOCK',
+		val: obj.name,
+		id: obj.id
+	}
+}
+
+export const delete_cmp_stock = (id) => {
+	return {
+		type: 'DELETE_CMP_STOCK',
+		id: id
+	}
+}
