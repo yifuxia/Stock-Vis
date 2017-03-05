@@ -38,7 +38,7 @@ class ComparePickerContainer extends React.Component {
                                 color={color(el.id % 20)}
                                 />
                        
-                        <p id={"cmp_"+el.id} style={{color:color(el.id % 20), marginTop:'0',marginBottom:'0'}}>20.23</p>
+                        <p id={"cmp_"+el.id} style={{color:color(el.id % 20), marginTop:'0',marginBottom:'0'}}></p>
                         </div>
                          <p style={{display:'inline-block',cursor:'pointer',margin:'0 5px',color:color(el.id % 20)}}
                             onClick = {() => this.props.delete_cmp_stock(el.id)}
